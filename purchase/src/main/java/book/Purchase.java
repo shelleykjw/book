@@ -47,7 +47,7 @@ public class Purchase {
 
         Product product = new Product();
         // mappings goes here
-        PerchaseApplication.applicationContext.getBean(ProductService.class)
+        PurchaseApplication.applicationContext.getBean(ProductService.class)
             .cancel(product);
     }
 
