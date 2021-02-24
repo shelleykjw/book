@@ -15,24 +15,19 @@ public class MyPageViewHandler {
 
 
     @Autowired
-    private MyPageRepository myPageRepository;
+    public MyPageRepository myPageRepository;
 
     @StreamListener(KafkaProcessor.INPUT)
     public void whenReserved_then_CREATE_1 (@Payload Reserved reserved) {
         try {
             if (reserved.isMe()) {
                 // view 객체 생성
-                //old//  = new ();
                 MyPage myPage = new MyPage();
                 // view 객체에 이벤트의 Value 를 set 함
-                //old//.setOrderId(.getId());
-                //old//.setProductId(.getProductId());
-                //old//.setStatusCode(.getStatusCode());
                 myPage.setOrderId(reserved.getId());
                 myPage.setProductId(reserved.getProductId());
                 myPage.setStatusCode(reserved.getStatusCode());
                 // view 레파지 토리에 save
-                //old//Repository.save();
                 myPageRepository.save(myPage);
             }
         }catch (Exception e){
@@ -46,15 +41,15 @@ public class MyPageViewHandler {
         try {
             if (delivered.isMe()) {
                 // view 객체 조회
-                //old//List<> List = Repository.findByOrderId(.getOrderId());
                 MyPage myPage = myPageRepository.findById(delivered.getOrderId()).get();
-                //old//for(  : List){
-                    // view 객체에 이벤트의 eventDirectValue 를 set 함
-                    // view 레파지 토리에 save
-                    //old//Repository.save();
+                // for(  : List){
+                //     // view 객체에 이벤트의 eventDirectValue 를 set 함
+                //     // view 레파지 토리에 save
+                //     Repository.save();
+                // }
                 myPage.setStatusCode(delivered.getStatusCode());
+
                 myPageRepository.save(myPage);
-            }
             }
         }catch (Exception e){
             e.printStackTrace();
