@@ -3,6 +3,8 @@ package book;
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
 import java.util.List;
+import book.external.Product;
+import book.external.ProductService;
 
 @Entity
 @Table(name="Purchase_table")
