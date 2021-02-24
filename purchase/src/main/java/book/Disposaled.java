@@ -1,4 +1,4 @@
-package BOOK;
+package book;
 
 public class Disposaled extends AbstractEvent {
 
