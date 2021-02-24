@@ -21,7 +21,21 @@ public class Purchase {
         BeanUtils.copyProperties(this, buyed);
         buyed.publishAfterCommit();
 
-
+//        Disposaled disposaled = new Disposaled();
+//        BeanUtils.copyProperties(this, disposaled);
+//        disposaled.publishAfterCommit();
+//
+//        //Following code causes dependency to external APIs
+//        // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
+//
+//        .external.Product product = new .external.Product();
+//        // mappings goes here
+//        Application.applicationContext.getBean(.external.ProductService.class)
+//            .disposalProduct(product);
+    }
+    
+    @PreRemove
+    public void onPreRemove(){
         Disposaled disposaled = new Disposaled();
         BeanUtils.copyProperties(this, disposaled);
         disposaled.publishAfterCommit();
@@ -29,14 +43,11 @@ public class Purchase {
         //Following code causes dependency to external APIs
         // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
 
-        .external.Product product = new .external.Product();
+        Product product = new Product();
         // mappings goes here
-        Application.applicationContext.getBean(.external.ProductService.class)
-            .disposalProduct(product);
-
-
+        PerchaseApplication.applicationContext.getBean(ProductService.class)
+            .cancel(product);
     }
-
 
     public Long getId() {
         return id;
