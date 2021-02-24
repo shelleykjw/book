@@ -48,7 +48,7 @@ public class Purchase {
         Product product = new Product();
         // mappings goes here
         PurchaseApplication.applicationContext.getBean(ProductService.class)
-            .cancel(product);
+            .disposalProduct(product);
     }
 
     public Long getId() {
