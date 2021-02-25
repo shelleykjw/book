@@ -5,21 +5,22 @@
 # 서비스 시나리오
 
 ### 기능적 요구사항
-1. 관리자가 구매도서를 등록하면 도서 재고가 증가된다. : 추가 요구사항 관련 신규
-2. 관리자가 폐기도서를 등록하면 도서 재고가 차감된다. : 추가 요구사항 관련 신규
+1. 관리자가 도서구매를 등록하면 상품이 등록된다. : 추가 요구사항 관련
+2. 관리자가 도서폐기를 등록하면 상품이 삭제된다. : 추가 요구사항 관련
 3. 고객이 도서를 예약하면 고객에게 도서가 배송되고 도서 재고가 차감된다.
 5. 고객이 도서 예약을 취소하면 도서 배송이 취소되고 주문상태가 업데이트 된다.
-8. 고객이 MyPage를 통해 예약 현황을 확인한다. : 추가 요구사항 관련 변경
+8. 고객이 MyPage를 통해 예약 현황을 확인한다. : 추가 요구사항 관련
 
 ### 비기능적 요구사항
 1. 트랜잭션
   1. 고객이 예약을 취소하면 반드시 배송이 취소되어야한다.
-  2. 관리자가 폐기도서를 등록하면 
+  2. 관리자가 도서 폐기를 등록하면 반드시 상품이 삭제되어여 한다. : 추가 요구사항 관련
 1. 장애격리
-  1. 배송이 진행되지 않아도 예약은 가능해야 한다. (Circuit Breaker, Eventual Consistency)
-  2. 예약이 중단되어도 배송은 예정대로 진행해야 한다. (Circuit Breaker)
+  1. 배송이 진행되지 않아도 예약은 가능해야 한다.
+  2. 예약이 중단되어도 배송은 예정대로 진행해야 한다.
+  3. 상품이 등록되지 않아도 도서구매 등록은 가능해야 한다. : 추가 요구사항 관련
 1. 성능
-  1. 상태가 바뀔때마다 MyPage에서 확인 가능해야 한다.
+  1. 상태가 바뀔때마다 MyPage에서 확인 가능해야 한다. : 추가 요구사항 관련
  
 # 체크포인트
 
@@ -89,24 +90,17 @@
   ![image](https://user-images.githubusercontent.com/487999/79684159-3543c700-826a-11ea-8d5f-a3fc0c4cad87.png)
 
 ## Event Storming 결과
-* MSAEZ 모델링 이벤트스토밍 결과:
-* Revision 1
-  - 주문(order)/배송(delivery)/상품(product)로 Bounded Context 설정
-  - 주문에서 event별 상태값을 포함한 트랜젝션 중심로직을 설정하고 product에서 전체 재고 수량을 관리
-
-![v2](https://user-images.githubusercontent.com/57124820/108931766-90fd8e80-768b-11eb-8d0a-e77ba14ff280.png)
-* MSAEZ 모델링 이벤트스토밍 최종 결과:
-  - 예약(reservation)/배송(delivery)/상품(product)/개인화면(myPage)로 Bounded Context 설정
-  - 주문의 자연어 뜻이 혼동되어 예약으로 변경하고, 기존 주문에 집중된 로직을 분리함
-  - 전체 상품의 배송상태를 취합하여 조회가능한 myPage 신설
-  - 상품은 기본적인 수량변동만 취합
-http://www.msaez.io/#/storming/mE0rA9pV1tPfOibSknVbRBhRqkY2/every/ccf36caac98aab7713fb43c28040d31f
-
-<img width="658" alt="스크린샷 2021-02-24 오전 2 10 08" src="https://user-images.githubusercontent.com/34236968/108880349-8ddfaf80-7645-11eb-9b80-b7737dd1896c.png">
+* MSAEZ 모델링 변경 내역:
+  - 기존 예약(reservation)/배송(delivery)/상품(product)/개인화면(myPage) Bounded Context
+    에 구매(perchase) Bounded Context 추가
+  - 구매 등록은 장애 격리 등 시스템 안정성을 위해 Pub/Sub 방식으로 Product 연계
+  - 폐기 등록은 미존재 상품 예약으로 인한 고객불만 등을 고려 Req/Res 방식으로 Product 연계 
+  - 
+http://www.msaez.io/#/storming/499CNjtu5DhZuKCiWHlk7yKb21o1/mine/e213269148820184d0458866d7c49edc
 
 ## Hexagonal Architecture Diagram
 
-Reservation과 Delivery는 동기식 조건을 위해 REST, 모든 비동기 통신은 Kafka MQ로 통신한다.
+Reservation  Delivery는 동기식 조건을 위해 REST, 모든 비동기 통신은 Kafka MQ로 통신한다.
 myPage는 수정이 아닌 조회 조건이므로 Kafka publisher는 없이 Listener만 존재한다.
 
 ![image](https://user-images.githubusercontent.com/57124820/108940533-de332d80-7696-11eb-944f-fb88dd8fe969.png)
